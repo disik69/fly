@@ -1,0 +1,33 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.wrap {
+    min-height: 100%;
+    padding: 10px;
+}
+
+.fly {
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    background-image: url('../img/fly/fly3.png');
+    position: absolute;
+    z-index: 100;
+    pointer-events: none;
+    -webkit-transform: matrix(-1,0,0,-1,-300,-300);
+    -moz-transform: matrix(-1,0,0,-1,-300,-300);
+    -ms-transform: matrix(-1,0,0,-1,-300,-300);
+    -o-transform: matrix(-1,0,0,-1,-300,-300);
+    transform: matrix(-1,0,0,-1,-300,-300);
+}
+
+.logo {
+    color: #a8a8a8;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+

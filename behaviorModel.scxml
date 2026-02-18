@@ -1,0 +1,208 @@
+<scxml
+	xmlns="http://www.w3.org/2005/07/scxml"
+    version="1.0"
+    profile="ecmascript"
+    initial="globalState"
+    >
+	<script>
+		var onShit = false
+		var isFlying = true
+		var r
+    	var getTimeout = function(e, d) {
+    		return Math.round(Math.random() * 2 * d) + e - d + "ms";
+		}
+    </script>
+	<state id="globalState" initial="hunting">
+
+		<state id="flight" initial="flight._init">
+			<onentry><send event="flight.timeout" id="flight.timeout" delayexpr="'1500ms'"/></onentry>
+			<history id="flight.history" type="deep">
+			</history>
+			<state id="flight._init">
+				<!-- <assign location="r" expr="Math.random()*100" /> -->
+				<!-- <transition cond="r &lt; 30" target="flight.flyAway"></transition> -->
+				<transition target="flight.flyAway"></transition>
+				<!-- <transition target="flight.flyToShit" /> -->
+			</state>
+			<state id="flight.flyAway" >
+<!-- 				<onentry>
+					<send event="flight.flyAway.timeout" id="flight.flyAway.timeout" delayexpr='getTimeout(4000, 0)' />
+				</onentry>
+				<transition event="flight.flyAway.timeout" target="flight.flyToShit" />
+				<onexit>
+					<cancel sendid="flight.flyAway.timeout"/>
+				</onexit> -->
+				<transition event="die" target="nonexistance" />
+			</state>
+<!-- 			<state id="flight.estimate" initial="flight.estimate.spurt">
+				<onentry>
+					<send event="flight.estimate.timeout" id="flight.estimate.timeout" delayexpr='getTimeout(2100, 1500)' />
+				</onentry>
+				<state id="flight.estimate.spurt">
+					<onentry>
+						<send event="flight.estimate.spurt.timeout" id="flight.estimate.spurt.timeout" delayexpr='getTimeout(300, 270)' />
+					</onentry>
+					<transition event="flight.estimate.spurt.timeout" target="flight.estimate.spurt" />
+					<onexit>
+						<cancel sendid="flight.estimate.spurt.timeout"/>
+					</onexit>
+				</state>
+				<transition event="flight.estimate.timeout" target="walking" />
+				<onexit>
+					<cancel sendid="flight.estimate.timeout"/>
+				</onexit>
+			</state> -->
+			<state id="flight.flyToShit">
+				<transition event="landing" target="walking.moving"></transition>
+				<transition event="continue" target="flight.flyToShit"></transition>
+			</state>
+			<!-- <transition cond="isFlying !== true" target="launch"></transition> -->
+			<transition event="flight.timeout" target="nonexistance" />
+			<onexit><cancel sendid="flight.timeout"/></onexit>
+		</state>
+
+<!-- 		<state id="launch">
+			<transition event="continue" target="flight.history">
+				<assign location="isFlying" expr="true" />
+			</transition>
+		</state>
+
+		<state id="landing">
+			<transition event="continue" target="walking.history">
+				<assign location="isFlying" expr="false"/>
+			</transition>
+		</state> -->
+
+		<state id="walking" initial="walking._init">
+			<onentry><send event="walking.timeout" id="walking.timeout" delayexpr="getTimeout(10000, 7000)"/></onentry>
+			<history id="walking.history" type="deep">
+			</history>
+			<state id="walking._init">
+				<onentry><assign location="r" expr="Math.random()*100"/></onentry>
+				<transition cond="r &lt; 20" target="walking.waiting"></transition>
+				<transition cond="r &lt; 25" target="walking.eating"></transition>
+				<transition cond="r &lt; 30" target="walking.applauseLeg"></transition>
+				<transition cond="r &lt; 37" target="walking.twist"></transition>
+				<transition cond="r &lt; 70" target="walking.moving"></transition>
+				<transition cond="r &lt; 80" target="walking.lookAround"></transition>
+				<transition cond="r &lt; 100" target="walking.applause"></transition>
+			</state>
+			<state id="walking.moving" initial="walking.moving.go" >
+				<onentry><send event="walking.moving.timeout" id="walking.moving.timeout" delayexpr='getTimeout(1000, 700)' /></onentry>
+				<state id="walking.moving.go" >
+					<onentry><send event="walking.moving.go.timeout" id="walking.moving.go.timeout" delayexpr='getTimeout(200, 180)' /></onentry>
+					<transition event="walking.moving.go.timeout" target="walking.moving.pause" />
+					<onexit><cancel sendid="walking.moving.go.timeout" /></onexit>
+				</state>
+				<state id="walking.moving.pause" >
+					<onentry><send event="walking.moving.pause.timeout" id="walking.moving.pause.timeout" delayexpr='getTimeout(400, 300)' /></onentry>
+					<transition event="walking.moving.pause.timeout" target="walking.moving.go" />
+					<onexit><cancel sendid="walking.moving.pause.timeout" /></onexit>
+				</state>
+				<transition event="walking.moving.timeout" cond="onShit === false" target="walking.moving"></transition>
+				<transition event="walking.moving.timeout" target="walking._init" />
+				<onexit><cancel sendid="walking.moving.timeout" /></onexit>
+			</state>
+			<state id="walking.waiting">
+				<onentry><send event="walking.waiting.timeout" id="walking.waiting.timeout" delayexpr='getTimeout(500, 470)' /></onentry>
+				<transition event="walking.waiting.timeout" target="walking._init" />
+				<onexit><cancel sendid="walking.waiting.timeout" /></onexit>
+			</state>
+			<state id="walking.lookAround">
+				<onentry><send event="walking.lookAround.timeout" id="walking.lookAround.timeout" delayexpr='getTimeout(400, 300)' /></onentry>
+				<transition event="walking.lookAround.timeout" target="walking._init" />
+				<onexit><cancel sendid="walking.lookAround.timeout" /></onexit>
+			</state>
+			<state id="walking.eating" initial="walking.eating.startEating">
+				<onentry><send event="walking.eating.timeout" id="walking.eating.timeout" delayexpr='getTimeout(500, 400)' /></onentry>
+				<state id="walking.eating.startEating">
+					<transition event="continue" target="walking.eating.continueEating"/>
+				</state>
+				<state id="walking.eating.continueEating">
+				</state>
+				<state id="walking.eating.endEating">
+					<assign location="r" expr="Math.random()*100" />
+					<transition event="continue" cond="r &lt; 30" target="walking.eating"></transition>
+					<transition event="continue" target="walking._init"/>
+				</state>
+				<transition event="walking.eating.timeout" target="walking.eating.endEating" />
+				<onexit><cancel sendid="walking.eating.timeout" /></onexit>
+			</state>
+			<state id="walking.applause" initial="walking.applause.startApplause">
+				<onentry><send event="walking.applause.timeout" id="walking.applause.timeout" delayexpr='getTimeout(1200, 1000)' /></onentry>
+				<state id="walking.applause.startApplause">
+					<transition event="continue" target="walking.applause.continueApplause"/>
+				</state>
+				<state id="walking.applause.continueApplause">
+				</state>
+				<state id="walking.applause.endApplause">
+					<transition event="continue" target="walking._init"/>
+				</state>
+				<transition event="walking.applause.timeout" target="walking.applause.endApplause" />
+				<onexit><cancel sendid="walking.applause.timeout" /></onexit>
+			</state>
+			<state id="walking.applauseLeg">
+				<transition event="continue" target="walking._init" />
+			</state>
+			<state id="walking.twist">
+				<transition event="continue" target="walking._init" />
+			</state>
+			<state id="walking.lookingFor" initial="walking.lookingFor._init">
+				<state id="walking.lookingFor._init">
+					<onentry><assign location="r" expr="Math.random()*100"/></onentry>
+					<transition cond="r &lt; 95" target="walking.lookingFor.lookPart" />
+					<!-- <transition cond="r &lt; 95" target="flight.flyToShit"></transition> -->
+					<transition target="flight" />
+				</state>
+				<state id="walking.lookingFor.lookPart">
+					<onentry>
+						<send event="walking.lookingFor.lookPart.timeout" id="walking.lookingFor.lookPart.timeout" delayexpr='getTimeout(200, 180)' />
+					</onentry>
+					<transition event="walking.lookingFor.lookPart.timeout" target="walking.lookingFor.lookPartPause"></transition>
+					<onexit>
+						<cancel sendid="walking.lookingFor.lookPart.timeout" />
+					</onexit>
+				</state>
+				<state id="walking.lookingFor.lookPartPause">
+					<onentry>
+						<send event="walking.lookingFor.lookPartPause.timeout" id="walking.lookingFor.lookPartPause.timeout" delayexpr='getTimeout(150, 100)'/>	
+					</onentry>
+					<transition event="walking.lookingFor.lookPartPause.timeout" target="walking.lookingFor.lookPart"></transition>
+					<onexit>
+						<cancel sendid="walking.lookingFor.lookPartPause.timeout" />
+					</onexit>
+				</state>
+				<transition event="shitFound" target="walking.moving.go" />
+			</state>
+			<transition event="inShit">
+				<assign expr="true" location="onShit" />
+			</transition>
+			<transition event="outShit">
+				<assign expr="false" location="onShit" />
+			</transition>
+			<!-- <transition cond="isFlying === true" target="landing" /> -->
+			<transition event="shitLost" cond="!In('walking.lookingFor')" target="walking.lookingFor" />
+			<transition event="walking.timeout" target="flight.flyAway"/>
+			<onexit><cancel sendid="walking.timeout"/></onexit>
+		</state>
+		<state id="nonexistance">
+			<onentry><send event="nonexistance.timeout" id="nonexistance.timeout" delayexpr="getTimeout(10000, 5000)" /></onentry>
+			<transition event="nonexistance.timeout" target="hunting"/>
+			<onexit><cancel sendid="nonexistance.timeout" /></onexit>
+		</state>
+		<state id="hunting">
+			<onentry><send event="hunting.timeout" id="hunting.timeout" delayexpr="'1000ms'" /></onentry>
+			<transition event="hunting.timeout" target="hunting"></transition>
+			<transition event="continue" target="flight.flyToShit" />
+			<onexit><cancel sendid="hunting.timeout" /></onexit>
+		</state> 
+		<state id="final">
+		</state>
+		<transition event="stop" target="final" />
+		<!-- <state id="relax">
+		</state>
+		<state id="runaway">
+		</state>
+		<transition event="mousemove" target="runaway" /> -->
+	</state>
+</scxml>
